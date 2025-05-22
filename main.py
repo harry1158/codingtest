@@ -17,15 +17,19 @@ class SplitResponse(BaseModel):
     perPerson: Union[list[int],str]
 
 def perPerson_calculator(count:int,amount:int):
-    if count == 0: 
-        return JSONResponse(status_code=400, content={"error": "Invalid count: must be at least 1"})
-    quotient :int = amount//count   #商について
-    remainder:int = amount % count  #余りについて
-    perPerson: list[int] = [quotient] * count 
+    if count == 0:
+        raise ValueError("Invalid count: must be at least 1")
+    quotient = amount // count
+    remainder = amount % count
+    perPerson = [quotient] * count
     perPerson[-1] += remainder
-    return JSONResponse(status_code=200, content={"perPerson": perPerson})
+    return perPerson
+
 
 @app.post("/api/v1/split", response_model=SplitResponse)
 def split_text(request: SplitRequest):
-    response = perPerson_calculator(request.count,request.amount)  
-    return response
+    try:
+        per_person_list = perPerson_calculator(request.count, request.amount)
+    except ValueError as e:
+        return JSONResponse(status_code=400, content={"error": str(e)})
+    return SplitResponse(perPerson=per_person_list)
