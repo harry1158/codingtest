@@ -16,7 +16,7 @@ def test_split_endpoint_normal():
 def test_split_endpoint_error():
     data = {
         "count": 0,
-        "amount": 1000,
+        "amount": 1000,pip
         "delimiter": ","
     }
     response = client.post("/api/v1/split", json=data)
